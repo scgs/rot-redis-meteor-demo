@@ -38,12 +38,16 @@ Meteor.methods({
             Redis.set('entity::'+entity+'::actionLock', 0);
 
             // execute a move if there is one in the queue
-            // TODO: the queue somehow lags behind what the actual last input from the user was
-            if (Redis.get('entity::'+entity+'::queue') >= 0) {
-                Redis.set('entity::'+entity+'::queue', -1);
-                Meteor.call('move', entity, direction);
-            }
+            Meteor.call('dequeueMove', entity);
         }, Redis.get('entity::'+entity+'::moveTime'));
+    },
+
+    dequeueMove: function(entity) {
+        var queuedDirection = Redis.get('entity::'+entity+'::queue');
+        if (queuedDirection >= 0) {
+            Redis.set('entity::'+entity+'::queue', -1);
+            Meteor.call('move', entity, queuedDirection);
+        }
     },
 
     target: function(targeter, targetee) { // TODO: in the future use Meteor.user() instead of targeter
