@@ -4,7 +4,7 @@ Meteor.startup(function() {
     document.body.appendChild(display.getContainer());
 
     // init username
-    Session.set('username', 'gilgi');
+    Session.set('username', prompt('type your username'));
 
     // draw map whenever username or level change
     Tracker.autorun(function() {
